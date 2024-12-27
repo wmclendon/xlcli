@@ -5,22 +5,26 @@ import typer
 from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
-from rich.text import Text
-from openpyxl import Workbook, load_workbook
+from openpyxl import load_workbook
 
 
 app = typer.Typer()
 
 console = Console()
 
+
 @app.command()
-def read_xlsx(file: str, sheet: str | None = typer.Option(None, help="Sheet name to read. Defaults to the first sheet")):
+def read_xlsx(
+    file: str,
+    sheet: str
+    | None = typer.Option(None, help="Sheet name to read. Defaults to the first sheet"),
+):
     """Read an Excel file and display its contents"""
 
     file_path = Path(file)
     if not file_path.exists():
-        console.print(f"[bold red]File \'{file}\' not found")
-        raise typer.Abort()
+        console.print(f"[bold red]File '{file}' not found.")
+        raise typer.Exit(code=1)
     wb = load_workbook(file)
     if sheet:
         ws = wb[sheet]
@@ -34,6 +38,7 @@ def read_xlsx(file: str, sheet: str | None = typer.Option(None, help="Sheet name
         table.add_row(*[str(cell) for cell in row])
 
     rprint(table)
+
 
 if __name__ == "__main__":
     app()
